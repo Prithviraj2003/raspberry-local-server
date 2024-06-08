@@ -1,0 +1,23 @@
+syntax = "proto3";
+
+message studentInfo {
+    string prn = 1;
+    int32 pin = 2;
+    string access = 3;
+} 
+
+message entryResponce {
+    string prn =1;
+    string name =2;
+    int32 phoneNumber =3;
+    string address =4;
+    string DOB =5;
+    string bloodGroup =6;
+    string Department =7;
+    int32 image =8;
+    bool access = 9;
+}
+
+service EntryService {
+    rpc CardEntry(studentInfo) returns (entryResponce);
+}
