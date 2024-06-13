@@ -112,8 +112,12 @@ setInterval(async function () {
     console.log("Time elapsed before user: ", pTime - currentTime, "ms");
     // await client.CardEntry(request, async (error, response) => {
     //   if (error) {
-    console.error("Error in gRPC call:");
-    const user = await User.findOne({ where: { prn: decoded.prn } });
+    // console.error("Error in gRPC call:");
+    const user = await User.findOne({
+      where: { prn: decoded.prn },
+      include: [{ model: ProfileImg }],
+    });
+    console.log("user :", user);
     console.log(request.access, user.access[request.access]);
     if (user.pin === decoded.pin && user.access[request.access] === true) {
       console.log("access granted");
@@ -122,15 +126,7 @@ setInterval(async function () {
     }
     //   } else {
     const Time = new Date().getTime();
-    console.log("Time elapsed before img : ", Time - currentTime, "ms");
-    console.log(response);
-    const image = await ProfileImg.findOne({
-      where: { id: response.image||user.image },
-    });
-    console.log("image :", image);
-    
-    const iTime = new Date().getTime();
-    console.log("Time elapsed after img : ", iTime - currentTime, "ms");
+    console.log("Time elapsed : ", Time - currentTime, "ms");
   };
   const Time = new Date().getTime();
   console.log("Time elapsed: ", Time - currentTime, "ms");
