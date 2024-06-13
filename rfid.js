@@ -89,7 +89,7 @@ setInterval(function () {
   const request = {
     prn: decoded.prn,
     pin: decoded.pin,
-    access: req.body.access,
+    access: "mainGate",
   };
   // Make the gRPC call
   console.log("gRPC client found");
