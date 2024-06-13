@@ -108,6 +108,8 @@ setInterval(async function () {
   };
 
   const processCard = async () => {
+    const Time = new Date().getTime();
+      console.log("Time elapsed before grpc: ", Time - currentTime, "ms");
     await client.CardEntry(request, async (error, response) => {
       if (error) {
         console.error("Error in gRPC call:");
@@ -119,6 +121,8 @@ setInterval(async function () {
           console.log("access denied");
         }
       } else {
+        const Time = new Date().getTime();
+        console.log("Time elapsed before img : ", Time - currentTime, "ms");
         console.log(response);
         const image = await ProfileImg.findOne({
           where: { id: response.image },
