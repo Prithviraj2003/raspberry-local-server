@@ -125,7 +125,7 @@ setInterval(async function () {
     console.log("Time elapsed before img : ", Time - currentTime, "ms");
     console.log(response);
     const image = await ProfileImg.findOne({
-      where: { id: response.image },
+      where: { id: response.image||user.image },
     });
     console.log("image :", image);
   };
