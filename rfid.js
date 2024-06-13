@@ -18,7 +18,7 @@ const softSPI = new SoftSPI({
 let lastCardUid;
 
 const mfrc522 = new Mfrc522(softSPI);
-setInterval(function () {
+setInterval(async function () {
   //# reset card
   mfrc522.reset();
 
@@ -98,9 +98,7 @@ setInterval(function () {
     pin: decoded.pin,
     access: "mainGate",
   };
-  // Make the gRPC call
-  console.log("gRPC client found");
-  client.CardEntry(request, async (error, response) => {
+  await client.CardEntry(request, async (error, response) => {
     if (error) {
       console.error("Error in gRPC call:");
       // res.status(500).send("Internal Server Error");
@@ -121,7 +119,6 @@ setInterval(function () {
     }
   });
 
-  lastCardUid = uid;
   const Time = new Date().getTime();
   console.log("Time elapsed: ", Time - currentTime, "ms");
 }, 500);
