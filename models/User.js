@@ -1,5 +1,6 @@
 const { Sequelize, DataTypes } = require("sequelize");
 const sequelize = require("../config/db");
+const ProfileImg = require("./ProfileImg");
 
 const User = sequelize.define("User", {
   prn: { type: DataTypes.STRING, allowNull: false, unique: true },
@@ -27,8 +28,9 @@ const User = sequelize.define("User", {
     allowNull: false,
   },
 });
-// User.hasOne(ProfileImg, { foreignKey: "userId" });
-// ProfileImg.belongsTo(User, { foreignKey: "userId" });
+
+User.belongsTo(ProfileImg, { foreignKey: "image" });
+ProfileImg.hasOne(User, { foreignKey: "image" });
 module.exports = User;
 
 // const mongoose = require("mongoose");
