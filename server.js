@@ -21,7 +21,7 @@ app.get("/", (req, res) => {
   res.send("Hello, World!");
 });
 
-export const entry = async (token) => {
+const entry = async (token) => {
   const decoded = jwt.decode(token, publicKey);
   console.log("decoded :", decoded);
   const request = {
@@ -64,3 +64,4 @@ sequelize
     console.log("Unable to connect to the database:");
     console.log(err);
   });
+  module.exports = entry;
