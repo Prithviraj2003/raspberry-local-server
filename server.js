@@ -21,8 +21,8 @@ app.get("/", (req, res) => {
   res.send("Hello, World!");
 });
 
-app.post("/entry", (req, res) => {
-  const decoded = jwt.decode(req.body.token, publicKey);
+export const entry = async (token) => {
+  const decoded = jwt.decode(token, publicKey);
   console.log("decoded :", decoded);
   const request = {
     prn: decoded.prn,
@@ -38,19 +38,21 @@ app.post("/entry", (req, res) => {
       const user = await User.findOne({ where: { prn: decoded.prn } });
       console.log(request.access, user.access[request.access]);
       if (user.pin === decoded.pin && user.access[request.access] === true) {
-        res.send({ access: true });
+        // res.send({ access: true });
+        console.log("access granted");
       } else {
-        res.send({ access: false });
+        // res.send({ access: false });
+        console.log("access denied");
       }
     } else {
       console.log(response);
-      const image=await ProfileImg.findOne({where:{id:response.image}});
-      console.log("image :",image)
-      response.image=image.img;
-      res.send(response);
+      const image = await ProfileImg.findOne({ where: { id: response.image } });
+      console.log("image :", image);
+      response.image = image.img;
+      // res.send(response);
     }
   });
-});
+};
 sequelize
   .sync({ force: false })
   .then(() => {
