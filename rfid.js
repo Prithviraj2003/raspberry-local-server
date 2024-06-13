@@ -38,7 +38,6 @@ setInterval(function () {
   }
   //# If we have the UID, continue
   const uid = response.data;
-  lastCardUid = uid;
   if (uid === lastCardUid) {
     console.log("Same Card");
     return;
@@ -122,6 +121,7 @@ setInterval(function () {
     }
   });
 
+  lastCardUid = uid;
   const Time = new Date().getTime();
   console.log("Time elapsed: ", Time - currentTime, "ms");
 }, 500);
