@@ -4,6 +4,7 @@ const jwt = require("jsonwebtoken");
 const User = require("./models/User");
 const ProfileImg = require("./models/ProfileImg");
 const Mfrc522 = require("mfrc522-rpi");
+const fs = require("fs");
 const publicKey = fs.readFileSync("public.key");
 console.log("Scanning...");
 console.log("Please put chip or keycard in the antenna inductive zone!");
