@@ -10,6 +10,7 @@ const client = require("./config/grpc_setup");
 const dotenv = require("dotenv");
 const User = require("./models/User");
 const ProfileImg = require("./models/ProfileImg");
+require("./rfid");
 dotenv.config();
 
 app.use(express.json());
