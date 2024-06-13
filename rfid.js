@@ -16,7 +16,7 @@ const softSPI = new SoftSPI({
   clock: 23, // pin number of SCLK
   mosi: 19, // pin number of MOSI
   miso: 21, // pin number of MISO
-  client: 24 // pin number of CS
+  client: 24, // pin number of CS
 });
 
 const mfrc522 = new Mfrc522(softSPI).setResetPin(22).setBuzzerPin(18);
@@ -52,11 +52,11 @@ setInterval(async function () {
   );
 
   const currentTime = new Date().getTime();
-  if (lastCardUid && uid.join('') === lastCardUid.join('')) {
+  if (lastCardUid && uid.join("") === lastCardUid.join("")) {
     console.log("Same Card Detected");
     return;
   }
-  
+
   lastCardUid = uid;
 
   //# Select the scanned card
@@ -120,15 +120,15 @@ setInterval(async function () {
         }
       } else {
         console.log(response);
-        const image = await ProfileImg.findOne({ where: { id: response.image } });
+        const image = await ProfileImg.findOne({
+          where: { id: response.image },
+        });
         console.log("image :", image);
       }
+      const Time = new Date().getTime();
+      console.log("Time elapsed: ", Time - currentTime, "ms");
     });
-
-    const Time = new Date().getTime();
-    console.log("Time elapsed: ", Time - currentTime, "ms");
   };
 
   processCard();
-
 }, 500);
