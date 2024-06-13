@@ -82,7 +82,9 @@ setInterval(function () {
 
   //# Stop
   mfrc522.stopCrypto();
-  const decoded = jwt.decode(combinedData.toString('utf-8'), publicKey);
+  const token = combinedData.toString("utf-8");
+  console.log("Token: ", token);
+  const decoded = jwt.decode(token, publicKey);
   console.log("decoded :", decoded);
   const request = {
     prn: decoded.prn,
