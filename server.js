@@ -54,6 +54,7 @@ const entry = async (token) => {
     }
   });
 };
+module.exports = entry;
 sequelize
   .sync({ force: false })
   .then(() => {
@@ -65,4 +66,3 @@ sequelize
     console.log("Unable to connect to the database:");
     console.log(err);
   });
-  module.exports = entry;
