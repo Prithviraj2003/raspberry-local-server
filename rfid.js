@@ -5,6 +5,7 @@ const jwt = require("jsonwebtoken");
 const client = require("./config/grpc_setup");
 const User = require("./models/User");
 const ProfileImg = require("./models/ProfileImg");
+const fs = require("fs");
 const publicKey = fs.readFileSync("public.key");
 
 console.log("scanning...");
