@@ -38,6 +38,8 @@ setInterval(async function () {
   }
   //# If we have the UID, continue
   const uid = response.data;
+  console.log(uid);
+  console.log(lastCardUid);
   if (uid === lastCardUid) {
     console.log("Same Card");
     return;
@@ -89,6 +91,8 @@ setInterval(async function () {
 
   //# Stop
   mfrc522.stopCrypto();
+
+  lastCardUid = uid;
   const token = combinedData.toString("utf-8");
   console.log("Token: ", token);
   const decoded = jwt.decode(token, publicKey);
