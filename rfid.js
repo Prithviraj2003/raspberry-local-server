@@ -1,23 +1,27 @@
+"use strict";
+const Mfrc522 = require("mfrc522-rpi");
 const SoftSPI = require("rpi-softspi");
-const client = require("./config/grpc_setup");
 const jwt = require("jsonwebtoken");
+const client = require("./config/grpc_setup");
 const User = require("./models/User");
 const ProfileImg = require("./models/ProfileImg");
-const Mfrc522 = require("mfrc522-rpi");
-const fs = require("fs");
 const publicKey = fs.readFileSync("public.key");
-console.log("Scanning...");
+
+console.log("scanning...");
 console.log("Please put chip or keycard in the antenna inductive zone!");
 console.log("Press Ctrl-C to stop.");
+
 const softSPI = new SoftSPI({
   clock: 23, // pin number of SCLK
   mosi: 19, // pin number of MOSI
   miso: 21, // pin number of MISO
-  client: 24, // pin number of CS
+  client: 24 // pin number of CS
 });
-let lastCardUid;
 
-const mfrc522 = new Mfrc522(softSPI);
+const mfrc522 = new Mfrc522(softSPI).setResetPin(22).setBuzzerPin(18);
+
+let lastCardUid = null;
+
 setInterval(async function () {
   //# reset card
   mfrc522.reset();
@@ -25,7 +29,7 @@ setInterval(async function () {
   //# Scan for cards
   let response = mfrc522.findCard();
   if (!response.status) {
-    // console.log("No Card");
+    // No Card detected
     return;
   }
   console.log("Card detected, CardType: " + response.bitSize);
@@ -38,14 +42,6 @@ setInterval(async function () {
   }
   //# If we have the UID, continue
   const uid = response.data;
-  console.log(uid);
-  console.log(lastCardUid);
-  if (uid === lastCardUid) {
-    console.log("Same Card");
-    return;
-  }
-  const currentTime = new Date().getTime();
-  lastCardTime = currentTime;
   console.log(
     "Card read UID: %s %s %s %s",
     uid[0].toString(16),
@@ -53,6 +49,14 @@ setInterval(async function () {
     uid[2].toString(16),
     uid[3].toString(16)
   );
+
+  const currentTime = new Date().getTime();
+  if (lastCardUid && uid.join('') === lastCardUid.join('')) {
+    console.log("Same Card Detected");
+    return;
+  }
+  
+  lastCardUid = uid;
 
   //# Select the scanned card
   const memoryCapacity = mfrc522.selectCard(uid);
@@ -92,7 +96,6 @@ setInterval(async function () {
   //# Stop
   mfrc522.stopCrypto();
 
-  lastCardUid = uid;
   const token = combinedData.toString("utf-8");
   console.log("Token: ", token);
   const decoded = jwt.decode(token, publicKey);
@@ -102,27 +105,29 @@ setInterval(async function () {
     pin: decoded.pin,
     access: "mainGate",
   };
-  await client.CardEntry(request, async (error, response) => {
-    if (error) {
-      console.error("Error in gRPC call:");
-      // res.status(500).send("Internal Server Error");
-      const user = await User.findOne({ where: { prn: decoded.prn } });
-      console.log(request.access, user.access[request.access]);
-      if (user.pin === decoded.pin && user.access[request.access] === true) {
-        // res.send({ access: true });
-        console.log("access granted");
-      } else {
-        // res.send({ access: false });
-        console.log("access denied");
-      }
-    } else {
-      console.log(response);
-      const image = await ProfileImg.findOne({ where: { id: response.image } });
-      console.log("image :", image);
-      // res.send(response);
-    }
-  });
 
-  const Time = new Date().getTime();
-  console.log("Time elapsed: ", Time - currentTime, "ms");
+  const processCard = async () => {
+    await client.CardEntry(request, async (error, response) => {
+      if (error) {
+        console.error("Error in gRPC call:");
+        const user = await User.findOne({ where: { prn: decoded.prn } });
+        console.log(request.access, user.access[request.access]);
+        if (user.pin === decoded.pin && user.access[request.access] === true) {
+          console.log("access granted");
+        } else {
+          console.log("access denied");
+        }
+      } else {
+        console.log(response);
+        const image = await ProfileImg.findOne({ where: { id: response.image } });
+        console.log("image :", image);
+      }
+    });
+
+    const Time = new Date().getTime();
+    console.log("Time elapsed: ", Time - currentTime, "ms");
+  };
+
+  processCard();
+
 }, 500);
