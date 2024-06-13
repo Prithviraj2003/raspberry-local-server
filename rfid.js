@@ -15,6 +15,7 @@ const softSPI = new SoftSPI({
   miso: 21, // pin number of MISO
   client: 24, // pin number of CS
 });
+let lastCardUid;
 
 const mfrc522 = new Mfrc522(softSPI);
 setInterval(function () {
@@ -37,6 +38,13 @@ setInterval(function () {
   }
   //# If we have the UID, continue
   const uid = response.data;
+  lastCardUid = uid;
+  if (uid === lastCardUid) {
+    console.log("Same Card");
+    return;
+  }
+  const currentTime = new Date().getTime();
+  lastCardTime = currentTime;
   console.log(
     "Card read UID: %s %s %s %s",
     uid[0].toString(16),
@@ -113,4 +121,7 @@ setInterval(function () {
       // res.send(response);
     }
   });
+
+  const Time = new Date().getTime();
+  console.log("Time elapsed: ", Time - currentTime, "ms");
 }, 500);
