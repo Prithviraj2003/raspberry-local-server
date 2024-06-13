@@ -3,7 +3,7 @@ const client = require("./config/grpc_setup");
 const jwt = require("jsonwebtoken");
 const User = require("./models/User");
 const ProfileImg = require("./models/ProfileImg");
-// const Mfrc522 = require("mfrc522-rpi");
+const Mfrc522 = require("mfrc522-rpi");
 console.log("Scanning...");
 console.log("Please put chip or keycard in the antenna inductive zone!");
 console.log("Press Ctrl-C to stop.");
