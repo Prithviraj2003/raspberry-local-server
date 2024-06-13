@@ -128,6 +128,9 @@ setInterval(async function () {
       where: { id: response.image||user.image },
     });
     console.log("image :", image);
+    
+    const iTime = new Date().getTime();
+    console.log("Time elapsed after img : ", iTime - currentTime, "ms");
   };
   const Time = new Date().getTime();
   console.log("Time elapsed: ", Time - currentTime, "ms");
