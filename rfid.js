@@ -132,18 +132,39 @@ setInterval(async function () {
           if (entry.entry !== null && entry.exit === null) {
             console.log("Already in");
           } else {
-            client.CardEntry(request);
+            client.CardEntry(request, async (error, response) => {
+              if (error) {
+                console.error("Error in gRPC call:");
+                console.log(error);
+              } else {
+                console.log(response);
+              }
+            });
           }
         }
         if (type === "Out") {
           if (entry.entry !== null && entry.exit === null) {
-            client.CardEntry(request);
+            client.CardEntry(request, async (error, response) => {
+              if (error) {
+                console.error("Error in gRPC call:");
+                console.log(error);
+              } else {
+                console.log(response);
+              }
+            });
           } else {
             console.log("Already out");
           }
         }
       } else {
-        client.CardEntry(request);
+        client.CardEntry(request, async (error, response) => {
+          if (error) {
+            console.error("Error in gRPC call:");
+            console.log(error);
+          } else {
+            console.log(response);
+          }
+        });
       }
       console.log("access granted");
     } else {
