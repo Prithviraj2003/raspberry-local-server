@@ -102,7 +102,7 @@ setInterval(async function () {
   const decoded = jwt.decode(token, publicKey);
   console.log("decoded :", decoded);
   const type = "In";
-  const gate = "library";
+  const gate = "mainGate";
   let request = {
     entryId: 0,
     prn: decoded.prn,
@@ -120,8 +120,8 @@ setInterval(async function () {
       include: [{ model: ProfileImg }],
     });
     console.log("user :", user);
-    console.log(request.access, user.access[request.access]);
-    if (user.pin === decoded.pin && user.access[request.access] === true) {
+    console.log(request.gate, user.access[request.gate]);
+    if (user.pin === decoded.pin && user.access[request.gate] === true) {
       const entry = await Entry.findOne({
         where: { prn: decoded.prn, gate: gate },
         order: [["createdAt", "DESC"]],
