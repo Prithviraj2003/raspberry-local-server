@@ -7,7 +7,7 @@ const User = require("./models/User");
 const ProfileImg = require("./models/ProfileImg");
 const fs = require("fs");
 const publicKey = fs.readFileSync("public.key");
-
+const Entry = require("./models/Entry");
 console.log("scanning...");
 console.log("Please put chip or keycard in the antenna inductive zone!");
 console.log("Press Ctrl-C to stop.");
@@ -101,10 +101,15 @@ setInterval(async function () {
   console.log("Token: ", token);
   const decoded = jwt.decode(token, publicKey);
   console.log("decoded :", decoded);
-  const request = {
+  const type = "In";
+  const gate = "library";
+  let request = {
+    entryId: 0,
     prn: decoded.prn,
     pin: decoded.pin,
-    access: "mainGate",
+    gate: gate,
+    type: type,
+    presentAuthority: "security",
   };
 
   const processCard = async () => {
@@ -117,6 +122,29 @@ setInterval(async function () {
     console.log("user :", user);
     console.log(request.access, user.access[request.access]);
     if (user.pin === decoded.pin && user.access[request.access] === true) {
+      const entry = await Entry.findOne({
+        where: { prn: decoded.prn, gate: gate },
+        order: [["createdAt", "DESC"]],
+      });
+      if (entry) {
+        request.entryId = entry.id;
+        if (type === "In") {
+          if (entry.entry !== null && entry.exit === null) {
+            console.log("Already in");
+          } else {
+            client.CardEntry(request);
+          }
+        }
+        if (type === "Out") {
+          if (entry.entry !== null && entry.exit === null) {
+            client.CardEntry(request);
+          } else {
+            console.log("Already out");
+          }
+        }
+      } else {
+        client.CardEntry(request);
+      }
       console.log("access granted");
     } else {
       console.log("access denied");
