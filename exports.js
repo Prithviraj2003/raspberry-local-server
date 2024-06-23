@@ -7,6 +7,7 @@ const publicKey = fs.readFileSync("public.key");
 const Entry = require("./models/Entry");
 
 const processCard = async (token) => {
+  const start = Date.now();
   const decoded = jwt.decode(token, publicKey);
   console.log("decoded :", decoded);
   const type = "In";
@@ -24,6 +25,7 @@ const processCard = async (token) => {
     where: { prn: decoded.prn },
     include: [{ model: ProfileImg }],
   });
+  console.log("time elapsed after user: ", Date.now() - start, "ms");
   console.log("user :", user);
   console.log(request.gate, user.access[request.gate]);
   if (user.pin === decoded.pin && user.access[request.gate] === true) {
@@ -31,6 +33,7 @@ const processCard = async (token) => {
       where: { prn: decoded.prn, gate: gate },
       order: [["createdAt", "DESC"]],
     });
+    console.log("time elapsed after entry: ", Date.now() - start, "ms");
     if (entry) {
       request.entryId = entry.id;
       if (type === "In") {
@@ -43,6 +46,11 @@ const processCard = async (token) => {
               console.log(error);
             } else {
               console.log(response);
+              console.log(
+                "time elapsed at response: ",
+                Date.now() - start,
+                "ms"
+              );
             }
           });
         }
@@ -55,6 +63,11 @@ const processCard = async (token) => {
               console.log(error);
             } else {
               console.log(response);
+              console.log(
+                "time elapsed at response: ",
+                Date.now() - start,
+                "ms"
+              );
             }
           });
         } else {
@@ -67,10 +80,12 @@ const processCard = async (token) => {
           console.error("Error in gRPC call:");
           console.log(error);
         } else {
+          console.log("time elapsed at response: ", Date.now() - start, "ms");
           console.log(response);
         }
       });
     }
+    console.log("time elapsed at access: ", Date.now() - start, "ms");
     console.log("access granted");
   } else {
     console.log("access denied");

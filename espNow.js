@@ -19,7 +19,7 @@ port.on('open', () => {
 
 parser.on('data', data => {
   console.log('Received data:', data);
-  processCard(data);
+  processCard(data.trim());
 });
 
 port.on('error', err => {
