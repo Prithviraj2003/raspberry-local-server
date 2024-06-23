@@ -20,8 +20,6 @@ const processCard = async (token) => {
     presentAuthority: "security",
     time: new Date(),
   };
-  const pTime = new Date().getTime();
-  console.log("Time elapsed before user: ", pTime - currentTime, "ms");
   const user = await User.findOne({
     where: { prn: decoded.prn },
     include: [{ model: ProfileImg }],
@@ -77,8 +75,6 @@ const processCard = async (token) => {
   } else {
     console.log("access denied");
   }
-  const Time = new Date().getTime();
-  console.log("Time elapsed : ", Time - currentTime, "ms");
 };
 
 module.exports = { processCard };
