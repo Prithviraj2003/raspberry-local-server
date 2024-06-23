@@ -20,7 +20,7 @@ app.get("/", (req, res) => {
 app.post("/entry", async (req, res) => {
   const token = req.body.token;
   console.log(token);
-  processCard(token);
+  processCard("In",token);
   res.send("done");
 });
 

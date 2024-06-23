@@ -6,11 +6,10 @@ const fs = require("fs");
 const publicKey = fs.readFileSync("public.key");
 const Entry = require("./models/Entry");
 
-const processCard = async (token) => {
+const processCard = async (type,token) => {
   const start = Date.now();
   const decoded = jwt.decode(token, publicKey);
   console.log("decoded :", decoded);
-  const type = "In";
   const gate = "mainGate";
   let request = {
     entryId: 0,

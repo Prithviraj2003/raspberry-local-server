@@ -18,8 +18,8 @@ port.on('open', () => {
 });
 
 parser.on('data', data => {
-  console.log('Received data:', data);
-  processCard(data.trim());
+  const newData= JSON.parse(data);
+  processCard(newData.entryType,newData.token);
 });
 
 port.on('error', err => {
