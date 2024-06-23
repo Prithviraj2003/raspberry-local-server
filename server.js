@@ -11,7 +11,7 @@ const dotenv = require("dotenv");
 const User = require("./models/User");
 const ProfileImg = require("./models/ProfileImg");
 const Entry = require("./models/Entry");
-require("./rfid");
+// require("./rfid");
 require("./espNow");
 dotenv.config();
 

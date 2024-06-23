@@ -1,7 +1,7 @@
 const { SerialPortStream } = require("@serialport/stream");
 const { autoDetect } = require("@serialport/bindings-cpp");
 const { ReadlineParser } = require("@serialport/parser-readline");
-const processCard =require('./rfid');
+const {processCard} =require('./exports');
 const DetectedBinding = autoDetect();
 
 // Create a new instance of SerialPortStream using the detected binding
