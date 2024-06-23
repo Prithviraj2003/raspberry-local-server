@@ -1,6 +1,6 @@
 const {  DataTypes } = require('sequelize');
 const sequelize = require('../config/db');
-const date = new Date().toISOString().split('T')[0];
+const date = new Date().toLocaleString("en-IN", { timeZone: "Asia/Kolkata" }).split(',')[0];
 console.log(date);
 const Entry = sequelize.define(`${date}_Entry`, {
   prn: { type: DataTypes.STRING, allowNull: false },
