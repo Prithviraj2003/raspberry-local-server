@@ -99,6 +99,12 @@ setInterval(async function () {
 
   const token = combinedData.toString("utf-8");
   console.log("Token: ", token);
+
+  
+
+  processCard(token);
+}, 500);
+const processCard = async (token) => {
   const decoded = jwt.decode(token, publicKey);
   console.log("decoded :", decoded);
   const type = "In";
@@ -110,69 +116,66 @@ setInterval(async function () {
     gate: gate,
     type: type,
     presentAuthority: "security",
+    time: new Date(),
   };
-
-  const processCard = async () => {
-    const pTime = new Date().getTime();
-    console.log("Time elapsed before user: ", pTime - currentTime, "ms");
-    const user = await User.findOne({
-      where: { prn: decoded.prn },
-      include: [{ model: ProfileImg }],
+  const pTime = new Date().getTime();
+  console.log("Time elapsed before user: ", pTime - currentTime, "ms");
+  const user = await User.findOne({
+    where: { prn: decoded.prn },
+    include: [{ model: ProfileImg }],
+  });
+  console.log("user :", user);
+  console.log(request.gate, user.access[request.gate]);
+  if (user.pin === decoded.pin && user.access[request.gate] === true) {
+    const entry = await Entry.findOne({
+      where: { prn: decoded.prn, gate: gate },
+      order: [["createdAt", "DESC"]],
     });
-    console.log("user :", user);
-    console.log(request.gate, user.access[request.gate]);
-    if (user.pin === decoded.pin && user.access[request.gate] === true) {
-      const entry = await Entry.findOne({
-        where: { prn: decoded.prn, gate: gate },
-        order: [["createdAt", "DESC"]],
-      });
-      if (entry) {
-        request.entryId = entry.id;
-        if (type === "In") {
-          if (entry.entry !== null && entry.exit === null) {
-            console.log("Already in");
-          } else {
-            client.CardEntry(request, async (error, response) => {
-              if (error) {
-                console.error("Error in gRPC call:");
-                console.log(error);
-              } else {
-                console.log(response);
-              }
-            });
-          }
+    if (entry) {
+      request.entryId = entry.id;
+      if (type === "In") {
+        if (entry.entry !== null && entry.exit === null) {
+          console.log("Already in");
+        } else {
+          client.CardEntry(request, async (error, response) => {
+            if (error) {
+              console.error("Error in gRPC call:");
+              console.log(error);
+            } else {
+              console.log(response);
+            }
+          });
         }
-        if (type === "Out") {
-          if (entry.entry !== null && entry.exit === null) {
-            client.CardEntry(request, async (error, response) => {
-              if (error) {
-                console.error("Error in gRPC call:");
-                console.log(error);
-              } else {
-                console.log(response);
-              }
-            });
-          } else {
-            console.log("Already out");
-          }
-        }
-      } else {
-        client.CardEntry(request, async (error, response) => {
-          if (error) {
-            console.error("Error in gRPC call:");
-            console.log(error);
-          } else {
-            console.log(response);
-          }
-        });
       }
-      console.log("access granted");
+      if (type === "Out") {
+        if (entry.entry !== null && entry.exit === null) {
+          client.CardEntry(request, async (error, response) => {
+            if (error) {
+              console.error("Error in gRPC call:");
+              console.log(error);
+            } else {
+              console.log(response);
+            }
+          });
+        } else {
+          console.log("Already out");
+        }
+      }
     } else {
-      console.log("access denied");
+      client.CardEntry(request, async (error, response) => {
+        if (error) {
+          console.error("Error in gRPC call:");
+          console.log(error);
+        } else {
+          console.log(response);
+        }
+      });
     }
-    const Time = new Date().getTime();
-    console.log("Time elapsed : ", Time - currentTime, "ms");
-  };
-
-  processCard();
-}, 500);
+    console.log("access granted");
+  } else {
+    console.log("access denied");
+  }
+  const Time = new Date().getTime();
+  console.log("Time elapsed : ", Time - currentTime, "ms");
+};
+module.exports = processCard;

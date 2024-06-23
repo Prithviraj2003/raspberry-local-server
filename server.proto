@@ -7,6 +7,7 @@ message studentInfo {
     string gate = 4;
     string type =5;
     string presentAuthority=6;
+    string time=7;
 } 
 
 message entryResponce {
