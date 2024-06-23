@@ -23,7 +23,7 @@ parser.on("data", (data) => {
     const newData = JSON.parse(data);
     processCard(newData.entryType, newData.token);
   } catch (error) {
-    console.log(error);
+    console.log("error");
   }
 });
 
