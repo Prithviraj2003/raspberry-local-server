@@ -5,8 +5,9 @@ const ProfileImg = require("./models/ProfileImg");
 const fs = require("fs");
 const publicKey = fs.readFileSync("public.key");
 const Entry = require("./models/Entry");
+const { broadcast } = require("./wsServer");
 
-const processCard = async (type,token) => {
+const processCard = async (type, token) => {
   const start = Date.now();
   const decoded = jwt.decode(token, publicKey);
   console.log("decoded :", decoded);
@@ -20,6 +21,10 @@ const processCard = async (type,token) => {
     presentAuthority: "security",
     time: new Date(),
   };
+  const time = new Date().toLocaleString("en-IN", {
+    timeZone: "Asia/Kolkata",
+  }).split(",")[1];
+  console.log("time : ", time);
   const user = await User.findOne({
     where: { prn: decoded.prn },
     include: [{ model: ProfileImg }],
@@ -38,11 +43,15 @@ const processCard = async (type,token) => {
       if (type === "entry") {
         if (entry.entry !== null && entry.exit === null) {
           console.log("Already in");
+          broadcast(JSON.stringify({ user,time, message: "Already in" }));
         } else {
-          client.CardEntry(request, async (error, response) => {
+          await client.CardEntry(request, async (error, response) => {
             if (error) {
               console.error("Error in gRPC call:");
               console.log(error);
+              broadcast(
+                JSON.stringify({ user, error,time, message: "Error in gRPC call" })
+              );
             } else {
               console.log(response);
               console.log(
@@ -50,16 +59,20 @@ const processCard = async (type,token) => {
                 Date.now() - start,
                 "ms"
               );
+              broadcast(JSON.stringify({ user,time, response }));
             }
           });
         }
       }
       if (type === "exit") {
         if (entry.entry !== null && entry.exit === null) {
-          client.CardEntry(request, async (error, response) => {
+          await client.CardEntry(request, async (error, response) => {
             if (error) {
               console.error("Error in gRPC call:");
               console.log(error);
+              broadcast(
+                JSON.stringify({ user, error,time, message: "Error in gRPC call" })
+              );
             } else {
               console.log(response);
               console.log(
@@ -67,26 +80,34 @@ const processCard = async (type,token) => {
                 Date.now() - start,
                 "ms"
               );
+              broadcast(JSON.stringify({ user,time, response }));
             }
           });
         } else {
           console.log("Already out");
+
+          broadcast(JSON.stringify({ user,time, message: "Already out" }));
         }
       }
     } else {
-      client.CardEntry(request, async (error, response) => {
+      await client.CardEntry(request, async (error, response) => {
         if (error) {
           console.error("Error in gRPC call:");
           console.log(error);
+          broadcast(
+            JSON.stringify({ user, error,time, message: "Error in gRPC call" })
+          );
         } else {
           console.log("time elapsed at response: ", Date.now() - start, "ms");
           console.log(response);
+          broadcast(JSON.stringify({ user,time, response }));
         }
       });
     }
     console.log("time elapsed at access: ", Date.now() - start, "ms");
   } else {
     console.log("access denied");
+    broadcast(JSON.stringify({ user,time, message: "access denied" }));
   }
 };
 

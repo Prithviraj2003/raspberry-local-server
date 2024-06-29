@@ -6,6 +6,8 @@ const server = http.createServer(app);
 const sequelize = require("./config/db");
 const dotenv = require("dotenv");
 const { processCard } = require("./exports");
+const {initializeWebSocket}=require("./wsServer");
+initializeWebSocket(server);
 // require("./rfid");
 require("./espNow");
 dotenv.config();
@@ -19,8 +21,9 @@ app.get("/", (req, res) => {
 });
 app.post("/entry", async (req, res) => {
   const token = req.body.token;
+  const entry=req.body.entry;
   console.log(token);
-  processCard("In",token);
+  processCard(entry, token);
   res.send("done");
 });
 
