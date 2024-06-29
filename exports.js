@@ -85,7 +85,6 @@ const processCard = async (type,token) => {
       });
     }
     console.log("time elapsed at access: ", Date.now() - start, "ms");
-    console.log("access granted");
   } else {
     console.log("access denied");
   }

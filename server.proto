@@ -12,6 +12,7 @@ message studentInfo {
 
 message entryResponce {
     bool success=1;
+    string message=2;
 }
 
 service EntryService {
