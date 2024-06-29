@@ -21,7 +21,7 @@ parser.on("data", (data) => {
   console.log(data);
   try {
     const newData = JSON.parse(data);
-    processCard(newData.entryType, newData.token);
+    processCard(newData.type, newData.rfid_data);
   } catch (error) {
     console.log("error");
   }

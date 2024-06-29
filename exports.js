@@ -35,7 +35,7 @@ const processCard = async (type,token) => {
     console.log("time elapsed after entry: ", Date.now() - start, "ms");
     if (entry) {
       request.entryId = entry.id;
-      if (type === "In") {
+      if (type === "entry") {
         if (entry.entry !== null && entry.exit === null) {
           console.log("Already in");
         } else {
@@ -54,7 +54,7 @@ const processCard = async (type,token) => {
           });
         }
       }
-      if (type === "Out") {
+      if (type === "exit") {
         if (entry.entry !== null && entry.exit === null) {
           client.CardEntry(request, async (error, response) => {
             if (error) {
